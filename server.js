@@ -23,9 +23,6 @@ app.use('/api',api);
 
 
 
-
-
-
 app.get('*', function (req, res) {
     res.sendFile(__dirname + '/public/views/index.html');
 });

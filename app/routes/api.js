@@ -103,30 +103,37 @@ module.exports = function(app, express) {
 
 
   api.route('/')
-    .post(function (req, res) {
-        var story = new Story({
-            creator: req.decoded.id,
-            content: req.body.content,
-        });
+        .post(function (req, res) {
+            var story = new Story({
+                creator: req.decoded.id,
+                content: req.body.content,
+            });
 
-        story.save(function (err) {
-            if(err){
-                res.send(err);  
-                return;
-            }
-            res.json({message: "New story created"});
-        });
-    })
+            story.save(function (err) {
+                if(err){
+                    res.send(err);  
+                    return;
+                }
+                res.json({message: "New story created"});
+            });
+        })
 
-    .post(function (req, res) {
-        Story.find({creator: req.decoded.id}, function (err, stories) {
-            if(err){
-                res.send(err);
-                return; 
-            }
-            res.json(stories);
+        .post(function (req, res) {
+            Story.find({creator: req.decoded.id}, function (err, stories) {
+                if(err){
+                    res.send(err);
+                    return; 
+                }
+                res.json(stories);
+            });
         });
-    })
+    
+    // decoded token for frondEnd apps
+    api.get('/checkme', function (req,res) {
+        res.json(req.decoded);
+    });
+
+
 
     return api;
 };
