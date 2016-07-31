@@ -1,4 +1,6 @@
 var User = require('../models/user');
+var Story = require('../models/story');
+
 var config = require('../../config');
 var jwt = require('jsonwebtoken');
 var secretKey = config.secretKey;
@@ -100,9 +102,31 @@ module.exports = function(app, express) {
     });
 
 
-    api.get('/', function (req, res) {
-        res.json({message: "Hello wordd"});
-    });
+  api.route('/')
+    .post(function (req, res) {
+        var story = new Story({
+            creator: req.decoded.id,
+            content: req.body.content,
+        });
+
+        story.save(function (err) {
+            if(err){
+                res.send(err);  
+                return;
+            }
+            res.json({message: "New story created"});
+        });
+    })
+
+    .post(function (req, res) {
+        Story.find({creator: req.decoded.id}, function (err, stories) {
+            if(err){
+                res.send(err);
+                return; 
+            }
+            res.json(stories);
+        });
+    })
 
     return api;
 };
