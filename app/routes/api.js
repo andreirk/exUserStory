@@ -71,11 +71,37 @@ module.exports = function(app, express) {
                         success:true,
                         message: 'Successfuli login',
                         token: token
-                    })
+                    });
 
                 }
             }
-        })
+        });
+    });
+
+    api.use(function(req, res, next){
+        console.log('Somebody juct came to our app');
+        var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+
+        if(token){
+            jwt.verify(token, secretKey, function (err, decoded) {
+                
+                if(err){
+                    res.status(403).send({success: false, message: 'Faild to auhenticate user'});
+
+                }
+                req.decoded = decoded;
+
+                next();
+
+            });
+        } else {
+            res.status(403).send({success: false, message: 'No token provided'});
+        }
+    });
+
+
+    api.get('/', function (req, res) {
+        res.json({message: "Hello wordd"});
     });
 
     return api;
